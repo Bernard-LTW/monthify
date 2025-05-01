@@ -1,4 +1,8 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Monthify - Spotify Stats Dashboard
+
+A simple web app that fetches data from the Spotify API and displays it in a user-friendly way. It allows users to view their top artists, tracks, and genres over the past month.
+
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app) and is a **learning ground** for me to explore API integration, data visualization, and user authentication in web applications.
 
 ## Getting Started
 
