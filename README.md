@@ -6,38 +6,49 @@ A simple web app that fetches data from the Spotify API and displays it in a use
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app) and is a **learning ground** for me to explore API integration, data visualization, and user authentication in web applications.
 
+## Main features
 
-## Getting Started
+- View your top tracks and artists from Spotify
+- Filter listening history by different time ranges (Last Month, Last 6 Months, Last Year)
+- Create playlists automatically from your top tracks
+- Secure authentication with Spotify OAuth
+- Real-time data fetching and visualization
+- Performance monitoring with Vercel Speed Insights
 
-First, run the development server:
+## Technicalities
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Implementing OAuth 2.0 authentication flow with Spotify
+- Managing secure token storage and refresh mechanisms
+- Server-side rendering (SSR) for improved performance and SEO
+- Masking real API calls with custom self-defined API routes
+- Building responsive UIs with Tailwind CSS
+- TypeScript integration for better type safety
+- Next.js App Router and API routes implementation
+- State management with React Context
+- Error handling and loading states
+- Secure cookie management for authentication
+- Integration with external APIs (Spotify Web API)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## To run this:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone this repo
+2. Go to [Spotify's Developer Site](https://developer.spotify.com/) and create an application to get an API key with scope `user-top-read`,`playlist-modify-public` and `playlist-modify-private`. Set the callback URI to be `http://127.0.0.1:4567/api/callback`(Spotify doesn't accept `localhost` in their callback URIs. Read more [here](https://developer.spotify.com/documentation/web-api/concepts/redirect_uri)).
+3. On the dashboard, choose your application and go to User Management and add your email for your Spotify account(Since your app is initialized as Developer Mode, the quota is up to 25 users you designate specifically on the dashboard. You can get around this by applying for approval on the developer dashboard)
+4. Copy the Client ID, Client Secret and Callback URL to add them to your `.env.local` file on the root directory of the cloned repository
+5. Install the dependencies with `pnpm install`
+6. Run with `pnpm dev` and open [](http://127.0.0.1/4567)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Notes to self/learnings
 
-## Learn More
+### Authentication & Security
+- React Providers are a great way to manage auth across sites
+- Use 127.0.0.1 instead of localhost for Spotify API Callback
+- Auto masking of env variables in Next.js
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Performance & Best Practices
+- Loading screens are crucial for better UX
+- Use interfaces to centralize datatypes and auto map JSONs
+- Linting is really useful for catching issues early
+  - Example: Using `<Image />` from `next/image` instead of `<img>` for better performance
+- Masking API calls to server side with built-in API routes
+- Add allowed domains for images in Next.js config for loading external images
