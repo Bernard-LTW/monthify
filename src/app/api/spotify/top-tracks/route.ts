@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 import { getSpotifyAccessToken } from '@/lib/spotify/utils';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const timeRange = searchParams.get('time_range') || 'short_term';
     const accessToken = await getSpotifyAccessToken();
     
     const response = await fetch(
-      'https://api.spotify.com/v1/me/top/tracks?limit=5&time_range=short_term',
+      `https://api.spotify.com/v1/me/top/tracks?limit=50&time_range=${timeRange}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
