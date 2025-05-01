@@ -6,7 +6,7 @@ A simple web app that fetches data from the Spotify API and displays it in a use
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app) and is a **learning ground** for me to explore API integration, data visualization, and user authentication in web applications.
 
-This app is hosted on [](monthify.vercel.app) but due to API restrictions, only desiganted users can login
+This app is hosted on [monthify.vercel.app](monthify.vercel.app) but due to API restrictions, only desiganted users can login
 
 ## Main features
 
@@ -38,7 +38,7 @@ This app is hosted on [](monthify.vercel.app) but due to API restrictions, only 
 3. On the dashboard, choose your application and go to User Management and add your email for your Spotify account(Since your app is initialized as Developer Mode, the quota is up to 25 users you designate specifically on the dashboard. You can get around this by applying for approval on the developer dashboard)
 4. Copy the Client ID, Client Secret and Callback URL to add them to your `.env.local` file on the root directory of the cloned repository
 5. Install the dependencies with `pnpm install`
-6. Run with `pnpm dev` and open [](http://127.0.0.1/4567)
+6. Run with `pnpm dev` and open [http://127.0.0.1/4567](http://127.0.0.1/4567)
 
 ## Notes to self/learnings
 
