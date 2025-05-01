@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { SpotifyClient } from '@/lib/spotify/client';
+import { spotifyConfig } from '@/lib/spotify/config';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -15,50 +16,45 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Exchange the code for an access token
-    const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI || '',
-        client_id: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID || '',
-        code_verifier: localStorage.get('code_verifier') || '',
-      }),
+    const spotifyClient = SpotifyClient.getInstance(spotifyConfig);
+    const tokens = await spotifyClient.exchangeCodeForTokens(code);
+
+    console.log('Received tokens:', { 
+      hasAccessToken: !!tokens.access_token,
+      hasRefreshToken: !!tokens.refresh_token,
+      expiresIn: tokens.expires_in 
     });
-
-    const tokens = await tokenResponse.json();
-
-    if (!tokenResponse.ok) {
-      throw new Error(tokens.error_description || 'Failed to get access token');
-    }
 
     // Create the response with redirect
     const response = NextResponse.redirect(new URL('/?auth=success', request.url));
-
-    // Set cookies in the response
-    response.cookies.set('spotify_access_token', tokens.access_token, {
+    
+    // Set cookies using NextResponse
+    response.cookies.set({
+      name: 'spotify_access_token',
+      value: tokens.access_token,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: tokens.expires_in, // Spotify tokens typically expire in 1 hour
+      maxAge: tokens.expires_in,
+      path: '/'
     });
 
     if (tokens.refresh_token) {
-      response.cookies.set('spotify_refresh_token', tokens.refresh_token, {
+      response.cookies.set({
+        name: 'spotify_refresh_token',
+        value: tokens.refresh_token,
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        // Refresh tokens typically don't expire, but we'll set a long expiration
         maxAge: 60 * 60 * 24 * 30, // 30 days
+        path: '/'
       });
     }
 
+    console.log('Response cookies:', response.cookies.getAll());
+
     return response;
-  } catch (error: unknown) {
+  } catch (error) {
     console.error('Spotify callback error:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return NextResponse.redirect(
