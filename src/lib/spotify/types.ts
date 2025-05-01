@@ -22,4 +22,19 @@ export interface SpotifyConfig {
   clientSecret: string;
   redirectUri: string;
   scopes: string[];
-} 
+}
+
+export interface Track {
+  name: string;
+  artists: { name: string }[];
+  album: { images: { url: string }[] };
+  uri: string;
+  external_urls: { spotify: string };
+}
+
+export interface Artist {
+  name: string;
+  images: { url: string }[];
+  genres: string[];
+  external_urls: { spotify: string };
+}

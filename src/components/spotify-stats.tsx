@@ -2,20 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
-interface Track {
-  name: string;
-  artists: { name: string }[];
-  album: { images: { url: string }[] };
-  uri: string;
-  external_urls: { spotify: string };
-}
-
-interface Artist {
-  name: string;
-  images: { url: string }[];
-  genres: string[];
-  external_urls: { spotify: string };
-}
+import { Track, Artist } from '@/lib/spotify/types';
+import Image from "next/image";
 
 type TimeRange = 'short_term' | 'medium_term' | 'long_term';
 
@@ -141,7 +129,7 @@ export default function SpotifyStats() {
             {topTracks.slice(0, 50).map((track, index) => (
               <div key={index} className="flex items-center space-x-3">
                 <span className="text-gray-400 w-6 text-right">{index + 1}</span>
-                <img
+                <Image
                   src={track.album.images[2]?.url || track.album.images[0]?.url}
                   alt={track.name}
                   className="w-12 h-12 rounded"
@@ -163,7 +151,7 @@ export default function SpotifyStats() {
           <div className="space-y-4">
             {topArtists.slice(0, 10).map((artist, index) => (
               <div key={index} className="flex items-center space-x-3">
-                <img
+                <Image
                   src={artist.images[2]?.url || artist.images[0]?.url}
                   alt={artist.name}
                   className="w-12 h-12 rounded-full"

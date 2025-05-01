@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSpotifyAccessToken } from '@/lib/spotify/utils';
+import { Track } from '@/lib/spotify/types';
 
 export async function POST(request: Request) {
   try {
@@ -44,7 +45,7 @@ export async function POST(request: Request) {
     const playlistData = await playlistResponse.json();
 
     // Add tracks to the playlist
-    const trackUris = tracks.map((track: any) => track.uri);
+    const trackUris = tracks.map((track: Track) => track.uri);
     const addTracksResponse = await fetch(
       `https://api.spotify.com/v1/playlists/${playlistData.id}/tracks`,
       {
