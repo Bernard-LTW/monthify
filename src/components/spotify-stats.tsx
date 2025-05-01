@@ -7,12 +7,14 @@ interface Track {
   artists: { name: string }[];
   album: { images: { url: string }[] };
   uri: string;
+  external_urls: { spotify: string };
 }
 
 interface Artist {
   name: string;
   images: { url: string }[];
   genres: string[];
+  external_urls: { spotify: string };
 }
 
 type TimeRange = 'short_term' | 'medium_term' | 'long_term';
@@ -138,13 +140,14 @@ export default function SpotifyStats() {
           <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
             {topTracks.slice(0, 50).map((track, index) => (
               <div key={index} className="flex items-center space-x-3">
+                <span className="text-gray-400 w-6 text-right">{index + 1}</span>
                 <img
                   src={track.album.images[2]?.url || track.album.images[0]?.url}
                   alt={track.name}
                   className="w-12 h-12 rounded"
                 />
                 <div>
-                  <p className="text-white font-medium">{track.name}</p>
+                  <p className="text-white font-medium"><a href={track.external_urls.spotify} target='_blank'>{track.name}</a></p>
                   <p className="text-gray-400 text-sm">
                     {track.artists.map(artist => artist.name).join(', ')}
                   </p>
@@ -166,7 +169,7 @@ export default function SpotifyStats() {
                   className="w-12 h-12 rounded-full"
                 />
                 <div>
-                  <p className="text-white font-medium">{artist.name}</p>
+                  <p className="text-white font-medium"><a href={artist.external_urls.spotify} target='_blank'>{artist.name}</a></p>
                   <p className="text-gray-400 text-sm">
                     {artist.genres.slice(0, 2).join(', ')}
                   </p>
