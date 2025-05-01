@@ -1,10 +1,7 @@
 import { SpotifyConfig } from './types';
 
 export const SPOTIFY_SCOPES = [
-  'user-read-email',
-  'user-read-private',
   'user-top-read',
-  'playlist-read-private',
   'playlist-modify-public',
   'playlist-modify-private'
 ];
