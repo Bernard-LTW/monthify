@@ -50,7 +50,7 @@ export class SpotifyClient {
     }
 
     this.tokens = await response.json();
-    return this.tokens;
+    return this.tokens!;
   }
 
   public async refreshTokens(): Promise<SpotifyTokens> {
@@ -78,7 +78,7 @@ export class SpotifyClient {
     }
 
     this.tokens = await response.json();
-    return this.tokens;
+    return this.tokens!;
   }
 
   public async getCurrentUser(): Promise<SpotifyUser> {
