@@ -1,5 +1,5 @@
 {
-    "github": {
-      "autoJobCancelation": false
+    "git": {
+      "deploymentEnabled": false
     }
   }
