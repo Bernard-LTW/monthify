@@ -55,3 +55,5 @@ This app is hosted on [monthify.vercel.app](monthify.vercel.app) but due to API 
   - Example: Using `<Image />` from `next/image` instead of `<img>` for better performance
 - Masking API calls to server side with built-in API routes
 - Add allowed domains for images in Next.js config for loading external images
+- Use skeletons
+- Logic wise, instead of waiting for the auth check to finish, you can show the login button right away, and only redirect to the dashboard if authenticated. This gives better user experience as the user experience is that they wait less.
