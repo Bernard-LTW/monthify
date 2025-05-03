@@ -19,11 +19,11 @@ export async function GET(request: Request) {
     const spotifyClient = SpotifyClient.getInstance(spotifyConfig);
     const tokens = await spotifyClient.exchangeCodeForTokens(code);
 
-    console.log('Received tokens:', { 
-      hasAccessToken: !!tokens.access_token,
-      hasRefreshToken: !!tokens.refresh_token,
-      expiresIn: tokens.expires_in 
-    });
+    // console.log('Received tokens:', { 
+    //   hasAccessToken: !!tokens.access_token,
+    //   hasRefreshToken: !!tokens.refresh_token,
+    //   expiresIn: tokens.expires_in 
+    // });
 
     // Create the response with redirect
     const response = NextResponse.redirect(new URL('/?auth=success', request.url));
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
       });
     }
 
-    console.log('Response cookies:', response.cookies.getAll());
+    // console.log('Response cookies:', response.cookies.getAll());
 
     return response;
   } catch (error) {

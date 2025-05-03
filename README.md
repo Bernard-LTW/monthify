@@ -30,6 +30,7 @@ This app is hosted on [monthify.vercel.app](monthify.vercel.app) but due to API 
 - Error handling and loading states
 - Secure cookie management for authentication
 - Integration with external APIs (Spotify Web API)
+- Use skeleton to improve laod times of the webpage
 
 ## To run this:
 

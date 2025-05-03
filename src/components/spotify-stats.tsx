@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { Track, Artist } from '@/lib/spotify/types';
 import Image from "next/image";
+import { SpotifyStatsSkeleton } from './skeletons';
 
 type TimeRange = 'short_term' | 'medium_term' | 'long_term';
 
@@ -11,6 +12,7 @@ export default function SpotifyStats() {
   const [topTracks, setTopTracks] = useState<Track[]>([]);
   const [topArtists, setTopArtists] = useState<Artist[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<TimeRange>('short_term');
   const [isCreatingPlaylist, setIsCreatingPlaylist] = useState(false);
 
@@ -23,20 +25,30 @@ export default function SpotifyStats() {
   useEffect(() => {
     const fetchSpotifyData = async () => {
       setIsLoading(true);
+      setError(null);
       try {
         // Fetch top tracks
         const tracksRes = await fetch(`/api/spotify/top-tracks?time_range=${timeRange}`);
+        if (!tracksRes.ok) {
+          const errorData = await tracksRes.json();
+          throw new Error(errorData.error || 'Failed to fetch top tracks');
+        }
         const tracksData = await tracksRes.json();
-        setTopTracks(tracksData.items);
+        setTopTracks(tracksData.items || []);
 
         // Fetch top artists
         const artistsRes = await fetch(`/api/spotify/top-artists?time_range=${timeRange}`);
+        if (!artistsRes.ok) {
+          const errorData = await artistsRes.json();
+          throw new Error(errorData.error || 'Failed to fetch top artists');
+        }
         const artistsData = await artistsRes.json();
-        setTopArtists(artistsData.items);
+        setTopArtists(artistsData.items || []);
 
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching Spotify data:', error);
+        setError(error instanceof Error ? error.message : 'Failed to fetch Spotify data');
         setIsLoading(false);
       }
     };
@@ -58,6 +70,11 @@ export default function SpotifyStats() {
         }),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create playlist');
+      }
+
       const data = await response.json();
       
       if (data.success && data.playlistUrl) {
@@ -67,19 +84,37 @@ export default function SpotifyStats() {
       }
     } catch (error) {
       console.error('Error creating playlist:', error);
-      alert('Failed to create playlist. Please try again.');
+      alert(error instanceof Error ? error.message : 'Failed to create playlist. Please try again.');
     } finally {
       setIsCreatingPlaylist(false);
     }
   };
 
   if (isLoading) {
+    return <SpotifyStatsSkeleton />;
+  }
+
+  if (error) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1DB954]"></div>
+      <div className="text-center py-8">
+        <p className="text-red-500 mb-4">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    // Replace with a gray div on error
+    const parent = e.currentTarget.parentElement;
+    if (parent) {
+      parent.innerHTML = '<div class="w-12 h-12 bg-gray-700 rounded"></div>';
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -107,7 +142,7 @@ export default function SpotifyStats() {
             <h2 className="text-2xl font-bold text-white">Top Tracks</h2>
             <button
               onClick={handleCreatePlaylist}
-              disabled={isCreatingPlaylist}
+              disabled={isCreatingPlaylist || topTracks.length === 0}
               className="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
             >
               {isCreatingPlaylist ? (
@@ -126,22 +161,40 @@ export default function SpotifyStats() {
             </button>
           </div>
           <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-            {topTracks.slice(0, 50).map((track, index) => (
-              <div key={index} className="flex items-center space-x-3">
-                <span className="text-gray-400 w-6 text-right">{index + 1}</span>
-                <Image
-                  src={track.album.images[2]?.url || track.album.images[0]?.url}
-                  alt={track.name}
-                  className="w-12 h-12 rounded"
-                />
-                <div>
-                  <p className="text-white font-medium"><a href={track.external_urls.spotify} target='_blank'>{track.name}</a></p>
-                  <p className="text-gray-400 text-sm">
-                    {track.artists.map(artist => artist.name).join(', ')}
-                  </p>
+            {topTracks.length === 0 ? (
+              <p className="text-gray-400 text-center py-4">No tracks found for this time period</p>
+            ) : (
+              topTracks.slice(0, 50).map((track, index) => (
+                <div key={index} className="flex items-center space-x-3">
+                  <span className="text-gray-400 w-6 text-right">{index + 1}</span>
+                  <div className="relative w-12 h-12">
+                    <Image
+                      src={track.album.images[2]?.url || track.album.images[0]?.url}
+                      alt={track.name}
+                      className="rounded"
+                      width={48}
+                      height={48}
+                      onError={handleImageError}
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium truncate">
+                      <a 
+                        href={track.external_urls.spotify} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="hover:underline"
+                      >
+                        {track.name}
+                      </a>
+                    </p>
+                    <p className="text-gray-400 text-sm truncate">
+                      {track.artists.map(artist => artist.name).join(', ')}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
@@ -149,21 +202,39 @@ export default function SpotifyStats() {
         <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
           <h2 className="text-2xl font-bold mb-4 text-white">Top Artists</h2>
           <div className="space-y-4">
-            {topArtists.slice(0, 10).map((artist, index) => (
-              <div key={index} className="flex items-center space-x-3">
-                <Image
-                  src={artist.images[2]?.url || artist.images[0]?.url}
-                  alt={artist.name}
-                  className="w-12 h-12 rounded-full"
-                />
-                <div>
-                  <p className="text-white font-medium"><a href={artist.external_urls.spotify} target='_blank'>{artist.name}</a></p>
-                  <p className="text-gray-400 text-sm">
-                    {artist.genres.slice(0, 2).join(', ')}
-                  </p>
+            {topArtists.length === 0 ? (
+              <p className="text-gray-400 text-center py-4">No artists found for this time period</p>
+            ) : (
+              topArtists.slice(0, 10).map((artist, index) => (
+                <div key={index} className="flex items-center space-x-3">
+                  <div className="relative w-12 h-12">
+                    <Image
+                      src={artist.images[2]?.url || artist.images[0]?.url}
+                      alt={artist.name}
+                      className="rounded-full"
+                      width={48}
+                      height={48}
+                      onError={handleImageError}
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium truncate">
+                      <a 
+                        href={artist.external_urls.spotify} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="hover:underline"
+                      >
+                        {artist.name}
+                      </a>
+                    </p>
+                    <p className="text-gray-400 text-sm truncate">
+                      {artist.genres.slice(0, 2).join(', ')}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
