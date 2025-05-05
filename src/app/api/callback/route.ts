@@ -33,11 +33,10 @@ export async function GET(request: Request) {
       name: 'spotify_access_token',
       value: tokens.access_token,
       httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: tokens.expires_in,
-      path: '/',
-      domain: process.env.NEXT_PUBLIC_DOMAIN || undefined
+      path: '/'
     });
 
     if (tokens.refresh_token) {
@@ -45,11 +44,10 @@ export async function GET(request: Request) {
         name: 'spotify_refresh_token',
         value: tokens.refresh_token,
         httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 30, // 30 days
-        path: '/',
-        domain: process.env.NEXT_PUBLIC_DOMAIN || undefined
+        path: '/'
       });
     }
 
