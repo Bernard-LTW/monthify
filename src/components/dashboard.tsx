@@ -2,7 +2,7 @@
 
 import SpotifyStats from './spotify-stats';
 import { useRouter } from 'next/navigation';
-
+import NowPlaying from './now-playing';
 export default function Dashboard() {
   const router = useRouter();
 
@@ -36,6 +36,7 @@ export default function Dashboard() {
             </button>
           </div>
           <SpotifyStats />
+          <NowPlaying />
         </div>
       </main>
     </div>

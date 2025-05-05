@@ -38,3 +38,48 @@ export interface Artist {
   genres: string[];
   external_urls: { spotify: string };
 }
+
+export interface SpotifyDevice {
+  id: string;
+  is_active: boolean;
+  is_private_session: boolean;
+  is_restricted: boolean;
+  name: string;
+  supports_volume: boolean;
+  type: string;
+  volume_percent: number;
+}
+
+export interface SpotifyContext {
+  external_urls: {
+    spotify: string;
+  };
+  href: string;
+  type: string;
+  uri: string;
+}
+
+export interface SpotifyActions {
+  disallows: {
+    resuming: boolean;
+    toggling_repeat_context?: boolean;
+    toggling_repeat_track?: boolean;
+    toggling_shuffle?: boolean;
+  };
+}
+
+export interface SpotifyCurrentlyPlaying {
+  device: SpotifyDevice;
+  shuffle_state: boolean;
+  smart_shuffle: boolean;
+  repeat_state: string;
+  timestamp: number;
+  context: SpotifyContext | null;
+  progress_ms: number;
+  item: Track | null;
+  currently_playing_type: string;
+  actions: SpotifyActions;
+  is_playing: boolean;
+}
+
+
