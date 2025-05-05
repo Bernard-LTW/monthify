@@ -32,7 +32,7 @@ export async function GET() {
     }
 
     const data = await response.json();
-    console.log('Playback State:', data);
+    // console.log('Playback State:', data);
 
     return NextResponse.json(data);
   } catch (error) {
